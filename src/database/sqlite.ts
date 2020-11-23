@@ -10,11 +10,16 @@ export class SQLiteDatabase implements DatabaseDriver {
      */
     private _sqlite: any;
 
+    //require('amqplib/callback_api')
+    private _amqp: any;
+
     /**
      * Create a new cache instance.
      */
     constructor(private options) {
         if (!sqlite3) return;
+
+        this._amqp = require('amqplib/callback_api');
 
         let path = process.cwd() + options.databaseConfig.sqlite.databasePath;
         this._sqlite = new sqlite3.cached.Database(path);
@@ -51,5 +56,38 @@ export class SQLiteDatabase implements DatabaseDriver {
             $key: key,
             $value: JSON.stringify(value)
         });
+
+        //port tu method set cua class RedisDatabase
+        if (this.options.databaseConfig.publishPresence === true && /^presence-.*:members$/.test(key)) {
+            this._amqp.connect('amqp://localhost', function(error0, connection) {
+                if (error0) {
+                    throw error0;
+                }
+                connection.createChannel(function(error1, channel) {
+                    if (error1) {
+                    throw error1;
+                    }
+                    var exchange = 'exchange_name';//cần khớp với bên nhận, search 'exchange_name' để xem
+                    
+                    var msg = JSON.stringify({
+                        "event": {
+                            "channel": key,
+                            "members": value
+                        }
+                    });
+
+                    channel.assertExchange(exchange, 'topic', {
+                        durable: false
+                    });
+                    channel.publish(exchange, 'PresenceChannelUpdated', Buffer.from(msg));
+                    console.log(" [x] Sent %s:'%s'", key, msg);
+                });
+
+                setTimeout(function() { 
+                    connection.close(); 
+                    process.exit(0) 
+                }, 500);
+            });
+        }
     }
 }
