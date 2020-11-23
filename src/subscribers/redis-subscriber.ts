@@ -38,9 +38,11 @@ export class RedisSubscriber implements Subscriber {
         return new Promise((resolve, reject) => {
             this._redis.on('pmessage', (subscribed, channel, message) => {
                 try {
+                    var msgRaw = message;
                     message = JSON.parse(message);
 
                     if (this.options.devMode) {
+                        Log.info("Raw: " + msgRaw);
                         Log.info("Channel: " + channel);
                         Log.info("Event: " + message.event);
                     }
