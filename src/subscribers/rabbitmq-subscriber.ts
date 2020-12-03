@@ -48,11 +48,12 @@ export class RabbitmqSubscriber implements Subscriber {
             //              ta cần port lại
             this._amqp.connect('amqp://localhost', function(error0, connection) {
                 if (error0) {
-                    Log.error('RabbitMQ could not connect. Error' + error0);
-                    reject('RabbitMQ could not connect. Error' + error0);
+                    Log.error('RabbitMQ could not connect. Error:' + error0);
+                    reject('RabbitMQ could not connect. Error:' + error0);
                 }
                 connection.createChannel(function(error1, channel) {
                     if (error1) {
+                        Log.error('RabbitMQ could not createChannel. Error:' + error1);
                         reject('RabbitMQ could not create channel. Error: ' + error1);
                     }
                     var exchange = 'exchange_name';
@@ -63,6 +64,7 @@ export class RabbitmqSubscriber implements Subscriber {
 
                     channel.assertQueue('', {exclusive: true}, function(error2, q) {
                         if (error2) {
+                            Log.error('RabbitMQ could not assert Queue. Error:' + error2);
                             reject('RabbitMQ could not assert Queue. Error:' + error2);
                         }
                         channel.bindQueue(q.queue, exchange, '#');//# is all
