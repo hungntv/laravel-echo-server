@@ -1,4 +1,8 @@
-# Laravel Echo Server
+# Laravel Echo Server with RabbitMQ
+
+I'm trying to remove redis completely. Please read the full story at https://github.com/hungntv/laravel-without-redis-sample
+
+------------------------------------
 
 NodeJs server for Laravel Echo broadcasting with Socket.io.
 
