@@ -2,6 +2,12 @@
 
 I'm trying to remove redis completely. Please read the full story at https://github.com/hungntv/laravel-without-redis-sample
 
+npm install
+
+npm run build
+
+node examples/server
+
 ------------------------------------
 
 NodeJs server for Laravel Echo broadcasting with Socket.io.
